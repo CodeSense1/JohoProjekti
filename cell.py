@@ -15,7 +15,7 @@ class Cell():
 
         # Cell object is basicly Button with extra methods
         self.__btn = tk.Button(self.__master, text=" ", command=self.press)
-        self.__btn.grid(row=1+x, column=1+y)
+        self.__btn.grid(row=1 + x, column=1 + y)
         self.__btn.configure(width=3, height=2)
 
         self.__x = x
@@ -42,7 +42,7 @@ class Cell():
     def isMine(self):
         return self.__mine
 
-    def setState(state):
+    def setState(self, state):
         """ 
         Set wether this Cell should be mine or regular.
         Do not change Cell is already set!

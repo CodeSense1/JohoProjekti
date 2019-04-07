@@ -3,17 +3,51 @@ from minesweeper import Minesweeper
 
 # Minesweeper
 
+# TODO: 1. Handle errorreus inputs
+#       2. New game - button and implementation
+#       3. Scoring system
+#       4. Proper documentation
+
 
 class GUI():
-    def __init__(self, boardSizeX, boardSizeY, mineCount):
+    def __init__(self):
+        """ Initialize game dimensions and select difficulty """
+        self.__root = tk.Tk()
+
+        self.__width = tk.IntVar()
+        self.__height = tk.IntVar()
+        self.__minecount = tk.IntVar()
+
+        tk.Label(self.__root, text="Enter the width:").grid(row=1, column=0)
+        tk.Label(self.__root, text="Enter the height:").grid(row=2, column=0)
+        tk.Label(self.__root, text="Enter the amount of mines:").grid(row=3, column=0)
+
+        infoLabel = tk.Label(self.__root, text="")
+        infoLabel.grid(row=0, column=1)
+
+        widthEntry = tk.Entry(self.__root, textvariable=self.__width)
+        widthEntry.grid(row=1, column=1)
+
+        heightEntry = tk.Entry(self.__root, textvariable=self.__height)
+        heightEntry.grid(row=2, column=1)
+
+        mineEntry = tk.Entry(self.__root, textvariable=self.__minecount)
+        mineEntry.grid(row=3, column=1)
+
+        startBtn = tk.Button(self.__root, text="Start game",
+                             command=self.setup)
+        startBtn.grid(row=4, column=1)
+
+        self.__root.mainloop()
+
+    def setup(self):
+        """ Setup the game """
+        self.__root.destroy()
         self.__window = tk.Tk()
         self.__game = Minesweeper(
-            self.__window, boardSizeX, boardSizeY, mineCount)
-
-        self.__width = boardSizeX
-        self.__height = boardSizeY
+            self.__window, self.__width.get(), self.__height.get(), self.__minecount.get())
         self.__l1 = tk.Label(
-            self.__window, text="Mines left: " + str(self.__game.getMineCount()))
+            self.__window, text="Mines on the field: " + str(self.__game.getMineCount()))
         self.__l1.grid(row=0, column=0)
 
         # Create buttons
@@ -23,7 +57,11 @@ class GUI():
         self.__game.update()
 
     def start(self):
-        self.__window.mainloop()
+        try:
+            self.__window.mainloop()
+        except AttributeError:
+            # User exit the program, so nothing to loop over
+            return
 
     def reset(self):
         self.__game.hideAll()
@@ -41,7 +79,7 @@ class GUI():
         # Reset - Button
         self.__resetBtn = tk.Button(
             self.__window, text="Reset game", command=self.reset)
-        self.__resetBtn.grid(row=2, column=0)
+        self.__resetBtn.grid(row=3, column=0)
 
         # End - Button
         self.__endBtn = tk.Button(
@@ -61,46 +99,10 @@ class GUI():
             self.__flagBtn.configure(bg="grey", text="Flag OFF")
 
 
-def menu():
-    root = tk.Tk()
-
-    tk.Label(root, text="Enter the width:").grid(row=0, column=0)
-    tk.Label(root, text="Enter the height:").grid(row=1, column=0)
-    tk.Label(root, text="Enter the amount of mines:").grid(row=2, column=0)
-
-    width = tk.IntVar(value=None)
-    widthEntry = tk.Entry(root,  textvariable=width)
-    widthEntry.grid(row=0, column=1)
-
-    height = tk.IntVar()
-    heightEntry = tk.Entry(root, textvariable=height)
-    heightEntry.grid(row=1, column=1)
-
-    minecount = tk.IntVar()
-    mineEntry = tk.Entry(root, textvariable=minecount)
-    mineEntry.grid(row=2, column=1)
-
-    startBtn = tk.Button(root, text="Start game",
-                         command=lambda: root.destroy())
-    startBtn.grid(row=3, column=2)
-    root.mainloop()
-
-    return width.get(), height.get(), minecount.get()
-
-
 def main():
 
-    w, h, m = menu()
-
-    if m >= w*h / 10:
-        # Too many mines...
-        pass
-
-    GRIDWIDTH = h
-    GRIDHEIGHT = w
-    MINES = m
-    gui = GUI(GRIDWIDTH, GRIDHEIGHT, MINES)
-    gui.start()
+    game = GUI()
+    game.start()
 
 
 main()

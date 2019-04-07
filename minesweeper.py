@@ -22,7 +22,7 @@ class Minesweeper():
 
         # Initialize 2-dimensional data structure
         self.__board = [[None for i in range(
-            self.__width)] for j in range(self.__height)]
+            self.__height)] for j in range(self.__width)]
 
         self.initializeBoard()  # Initialize and place Cells on correct positions
 
@@ -41,7 +41,7 @@ class Minesweeper():
     def hideAll(self):
         for i in range(self.__width):
             for j in range(self.__height):
-                self.__board[i][j].__isRevealed = False
+                self.__board[i][j].setState(False)
 
     def gameOver(self):
         self.showAll()
@@ -51,14 +51,20 @@ class Minesweeper():
 
         # Initialize random positions for mines
         minepos = []
+        if self.__mines >= (self.__width * self.__height):
+            # There are more or equal amount of mines than cells
+            for i in range(self.__width):
+                for j in range(self.__height):
+                    minepos.append([i, j])
 
-        while len(minepos) < self.__mines:
+        else:
+            while len(minepos) < self.__mines:
 
-            pos = [randint(0, self.__width-1), randint(0, self.__height-1)]
-            if pos in minepos:
-                continue
-            else:
-                minepos.append(pos)
+                pos = [randint(0, self.__width - 1), randint(0, self.__height - 1)]
+                if pos in minepos:
+                    continue
+                else:
+                    minepos.append(pos)
 
         # Populate new board with Cells
         # TODO: Find a way that player doesn't lose on first turn
@@ -172,12 +178,12 @@ class Minesweeper():
                 if i == 0 and j == 0:
                     # We don't want to compare to ourself
                     continue
-                if x+i < 0 or y + j < 0:
+                if x + i < 0 or y + j < 0:
                     # We dont want to check for top and botton cells together
                     continue
 
                 try:
-                    neighbour = self.__board[x+i][y+j]
+                    neighbour = self.__board[x + i][y + j]
                     if neighbour.isMine():
                         minecount += 1
                         continue
