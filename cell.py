@@ -15,8 +15,8 @@ class Cell():
 
         # Cell object is basicly Button with extra methods
         self.__btn = tk.Button(self.__master, text=" ", command=self.press)
-        self.__btn.grid(row=1 + x, column=1 + y)
-        self.__btn.configure(width=3, height=2)
+        self.__btn.grid(row=2 + x, column=1 + y)
+        self.__btn.configure(width=2)
 
         self.__x = x
         self.__y = y
@@ -73,6 +73,7 @@ class Cell():
         """ Update this Cell """
         if self.__flag:
             self.__txt = "?"
+
         elif not self.__flag and not self.__isRevealed:
             self.__txt = " "
         elif self.__mine and self.__isRevealed:
@@ -80,6 +81,8 @@ class Cell():
 
         elif self.__isRevealed:
             self.__txt = str(self.__neighbourMines)
+
+            self.__btn.configure(bg="grey63")
 
         self.__btn.configure(text=self.__txt)
 
@@ -91,7 +94,7 @@ class Cell():
 
         elif self.__mine:
             self.show()
-            self.__gameInstance.showAll()
+            self.__gameInstance.gameOver()
             # GAME OVER!
 
         elif self.__isRevealed:

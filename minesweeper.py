@@ -44,6 +44,7 @@ class Minesweeper():
                 self.__board[i][j].setState(False)
 
     def gameOver(self):
+
         self.showAll()
 
     def initializeBoard(self):
@@ -60,7 +61,8 @@ class Minesweeper():
         else:
             while len(minepos) < self.__mines:
 
-                pos = [randint(0, self.__width - 1), randint(0, self.__height - 1)]
+                pos = [randint(0, self.__width - 1),
+                       randint(0, self.__height - 1)]
                 if pos in minepos:
                     continue
                 else:
@@ -85,6 +87,15 @@ class Minesweeper():
 
     def getMines(self):
         return [j for sub in self.__board for j in sub]
+
+    def getFlaggedMines(self):
+        flagged = 0
+        for i in range(self.__width):
+            for j in range(self.__height):
+                if self.__board[i][j].isFlag():
+                    flagged += 1
+
+        return flagged
 
     def getMineCount(self):
         """
@@ -141,13 +152,13 @@ class Minesweeper():
 
                     neighbour = self.__board[i][j]
 
-                    if neighbour.isMine():
-                        self.gameOver()
-                        return
-
                     if neighbour.isFlag():
                         # Neighbour is flagged, so we don't want to check it
                         continue
+
+                    if neighbour.isMine():
+                        self.gameOver()
+                        return
 
                     # Check if neighbours neighbourcount is 0
                     if neighbour.getCellNumber() == 0 and not neighbour.isRevealed():
