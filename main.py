@@ -3,7 +3,7 @@ from minesweeper import Minesweeper
 
 # Minesweeper
 
-# TODO: 1. Handle errorreus inputs
+# TODO: 1. Handle errorreus inputs DONE
 #       2. New game - button and implementation
 #       3. Change colors when cell is revealed
 #       4. Scoring system
@@ -15,10 +15,14 @@ class GUI():
         """ Initialize game dimensions and select difficulty """
         self.__root = tk.Tk()
 
+        # Set a static size
+        self.__root.geometry("350x150")
+
         self.__width = tk.IntVar()
         self.__height = tk.IntVar()
         self.__minecount = tk.IntVar()
 
+        # Create labels
         tk.Label(self.__root, text="Enter the width:").grid(row=1, column=0)
         tk.Label(self.__root, text="Enter the height:").grid(row=2, column=0)
         tk.Label(self.__root, text="Enter the amount of mines:").grid(
@@ -38,29 +42,43 @@ class GUI():
 
         easyBtn = tk.Button(self.__root, text="Easy",
                             command=self.easy)
-        easyBtn.grid(row=1, column=2)
+        easyBtn.grid(row=1, column=2, sticky=tk.E)
 
         mediumBtn = tk.Button(self.__root, text="Medium", command=self.medium)
-        mediumBtn.grid(row=2, column=2)
+        mediumBtn.grid(row=2, column=2, sticky=tk.E)
+
+        hardBtn = tk.Button(self.__root, text="Hard", command=self.hard)
+        hardBtn.grid(row=3, column=2, sticky=tk.E)
+
         startBtn = tk.Button(self.__root, text="Start game",
-                             command=self.setup)
-        startBtn.grid(row=4, column=1)
+                             command=self.setup, height=2, width=7)
+
+        startBtn.grid(row=4, column=1, sticky=tk.W)
 
         self.__root.mainloop()
 
     def setup(self):
         """ Setup the game """
+        try:
+            w = self.__width.get()
+            h = self.__height.get()
+            m = self.__minecount.get()
+        except tk.TclError:
+            # User entered invalid argument
+            return
+
         self.__root.destroy()
         self.__window = tk.Tk()
         self.__window.title("Minesweeper")
+
         self.__game = Minesweeper(
-            self.__window, self.__width.get(), self.__height.get(), self.__minecount.get())
+            self, self.__window, self.__width.get(), self.__height.get(), self.__minecount.get())
 
         l1 = tk.Label(self.__window, text="Options")
         l1.grid(row=0, column=0)
 
         self.__l2 = tk.Label(
-            self.__window, text="Mines left: " + str(self.__game.getMineCount()))
+            self.__window, text=":|")
         self.__l2.grid(row=1, column=self.__width.get() // 2, columnspan=5)
 
         # Create buttons
@@ -68,7 +86,7 @@ class GUI():
 
         # Update game
         self.__game.update()
-        self.updateButtons()
+        self.updateText(self.__game.hasWon())
 
     def easy(self):
         self.__width.set(9)
@@ -79,6 +97,11 @@ class GUI():
         self.__width.set(16)
         self.__height.set(16)
         self.__minecount.set(40)
+
+    def hard(self):
+        self.__width.set(20)
+        self.__height.set(20)
+        self.__minecount.set(65)
 
     def start(self):
         try:
@@ -93,35 +116,48 @@ class GUI():
         if self.__flagBtn.cget("bg") == "orange red":
             self.flag()
 
-    def updateButtons(self):
-        self.__l2.configure(text="Mines left: " +
-                            str(self.__game.getMineCount()))
+    def updateText(self, hasWon):
+        state = ":|"
+        if self.__game.lose():
+            state = ":("
+        elif hasWon:
+            state = ":)"
+        self.__l2.configure(text=state)
 
     def createButtons(self):
         # Flag - Button
         self.__flagBtn = tk.Button(
-            self.__window, text="Flag OFF", command=self.flag)
-        self.__flagBtn.grid(row=3, column=0)
+            self.__window, text="Flag OFF", command=self.flag, width=12)
+        self.__flagBtn.grid(row=2, column=0)
         self.__flagBtn.configure(bg='grey63')
 
+        # New game
+
+        self.__newGameBtn = tk.Button(
+            self.__window, text="New Game", command=self.newGame, width=12)
+        self.__newGameBtn.grid(row=self.__height.get() - 1, column=0)
         # Reset - Button
         self.__resetBtn = tk.Button(
             self.__window, text="Reset game", command=self.reset, width=12)
-        self.__resetBtn.grid(row=self.__height.get() - 3, column=0)
+        self.__resetBtn.grid(row=self.__height.get() - 2, column=0)
 
         # End - Button
         self.__endBtn = tk.Button(
             self.__window, text="QUIT", command=self.quitGame, width=12)
-        self.__endBtn.grid(row=self.__height.get() - 1, column=0)
+        self.__endBtn.grid(row=self.__height.get(), column=0)
 
     def quitGame(self):
         self.__window.destroy()
+
+    def newGame(self):
+        self.__window.destroy()
+        self.__init__()
 
     def flag(self):
         self.__game.toggleFlag()
 
         if self.__game.flag():
-            self.__flagBtn.configure(bg='red', text="Flag ON")
+            self.__flagBtn.configure(bg='orange red', text="Flag ON")
 
         else:
             self.__flagBtn.configure(bg="grey", text="Flag OFF")

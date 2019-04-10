@@ -5,8 +5,10 @@ import tkinter as tk
 
 class Cell():
 
-    def __init__(self, x, y, mineState, master, gameInstance):
+    def __init__(self, window, x, y, mineState, master, gameInstance):
 
+        # Reference to main window object
+        self.__window = window
         # Reference to minesweeper game object
         self.__gameInstance = gameInstance
 

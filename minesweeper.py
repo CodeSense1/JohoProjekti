@@ -11,18 +11,22 @@ class Minesweeper():
         information related to the game.
     """
 
-    def __init__(self, master, width, height, mines):
+    def __init__(self, window, master, width, height, mines):
+        self.__window = window  # Instance of window object
         self.__master = master
         self.__width = width
         self.__height = height
 
         # Indicates wether the flag is on or off
         self.__flag = False
+        self.__gameover = False
+        self.__win = False
         self.__mines = mines
 
+        self.__amountOfRevealedCells = 0
         # Initialize 2-dimensional data structure
-        self.__board = [[None for i in range(
-            self.__height)] for j in range(self.__width)]
+        self.__board = [[None for _ in range(
+            self.__height)] for _ in range(self.__width)]
 
         self.initializeBoard()  # Initialize and place Cells on correct positions
 
@@ -33,23 +37,31 @@ class Minesweeper():
     def flag(self):
         return self.__flag
 
+    def win(self):
+        return self.__win
+
+    def lose(self):
+        return self.__gameover
+
     def showAll(self):
         for i in range(self.__width):
             for j in range(self.__height):
                 self.__board[i][j].show()
 
     def hideAll(self):
+        self.__gameover = False
         for i in range(self.__width):
             for j in range(self.__height):
                 self.__board[i][j].setState(False)
 
     def gameOver(self):
-
+        self.__gameover = True
         self.showAll()
 
     def initializeBoard(self):
         """ Initialize the board with random minepositions """
-
+        self.__gameover = False
+        self.__amountOfRevealedCells = 0
         # Initialize random positions for mines
         minepos = []
         if self.__mines >= (self.__width * self.__height):
@@ -76,8 +88,8 @@ class Minesweeper():
                     state = True
                 else:
                     state = False
-
-                self.__board[i][j] = Cell(i, j, state, self.__master, self)
+                self.__board[i][j] = Cell(
+                    self.__window, i, j, state, self.__master, self)
 
         # Get random Cells and convert them to mines.
 
@@ -86,7 +98,7 @@ class Minesweeper():
                 self.countNeighbours(i, j)
 
     def getMines(self):
-        return [j for sub in self.__board for j in sub]
+        return [j for foo in self.__board for j in foo]
 
     def getFlaggedMines(self):
         flagged = 0
@@ -97,25 +109,25 @@ class Minesweeper():
 
         return flagged
 
-    def getMineCount(self):
-        """
-        Returns how many mines are not revealed.
-        """
-        mineCount = 0
-        for i in range(self.__width):
-            for j in range(self.__height):
-                if self.__board[i][j].isMine():
-                    mineCount += 1
-        return mineCount
+    def hasWon(self):
+        """ Wether player has won the game """
+        if self.__mines + self.__amountOfRevealedCells >= self.__height * self.__width and not self.__gameover:
+            return True
+        else:
+            return False
 
     def update(self):
         """ Update board """
+
         for i in range(self.__width):
             for j in range(self.__height):
                 # Let's update this cell
                 cell = self.__board[i][j]
 
                 if cell.isRevealed():
+                    if not cell.isMine():
+                        self.__amountOfRevealedCells += 1
+
                     if cell.getCellNumber() == 0:
                         # No mines nearby, so lets update surrounding neighbours
                         self.updateNeighbours(i, j)
@@ -124,6 +136,8 @@ class Minesweeper():
                         cell.update()
                 else:
                     cell.update()
+
+        self.__window.updateText(self.hasWon())
 
     def updateNeighbours(self, cellX, cellY):
         """ Update neighbour cells around cellX and cellY
