@@ -28,6 +28,9 @@ class GUI():
         tk.Label(self.__root, text="Enter the amount of mines:").grid(
             row=3, column=0)
 
+        self.__errorLabel = tk.Label(self.__root, text="")
+        self.__errorLabel.grid(row=0, column=1, columnspan=2)
+
         infoLabel = tk.Label(self.__root, text="")
         infoLabel.grid(row=0, column=1)
 
@@ -65,6 +68,8 @@ class GUI():
             m = self.__minecount.get()
         except tk.TclError:
             # User entered invalid argument
+            self.__errorLabel.configure(text="Invalid input!")
+
             return
 
         self.__root.destroy()
@@ -111,20 +116,34 @@ class GUI():
             return
 
     def reset(self):
+        """ Resets the game """
+        # Set smiley face back to default
+        self.__l2.configure(text=":|")
+        # Hide all cells
         self.__game.hideAll()
+        # Configure new board
         self.__game.initializeBoard()
+        # Reset flag- button to default
         if self.__flagBtn.cget("bg") == "orange red":
             self.flag()
 
     def updateText(self, hasWon):
-        state = ":|"
+        """ Update smiley face """
+
+        state = ":|"  # Default state
         if self.__game.lose():
+            # Sad face, if game is over
             state = ":("
         elif hasWon:
+            # Smiley face for victory
             state = ":)"
+
+        # Show current state
         self.__l2.configure(text=state)
 
     def createButtons(self):
+        """ Create buttons for the game window """
+
         # Flag - Button
         self.__flagBtn = tk.Button(
             self.__window, text="Flag OFF", command=self.flag, width=12)
@@ -132,7 +151,6 @@ class GUI():
         self.__flagBtn.configure(bg='grey63')
 
         # New game
-
         self.__newGameBtn = tk.Button(
             self.__window, text="New Game", command=self.newGame, width=12)
         self.__newGameBtn.grid(row=self.__height.get() - 1, column=0)
@@ -147,15 +165,21 @@ class GUI():
         self.__endBtn.grid(row=self.__height.get(), column=0)
 
     def quitGame(self):
+        """ Quit the game """
         self.__window.destroy()
 
     def newGame(self):
-        self.__window.destroy()
-        self.__init__()
+        """ Setup new game """
+
+        self.__window.destroy()  # Destroy current window
+        self.__init__()  # Initialize new game
 
     def flag(self):
+        """ Toggle flag state """
+        # Toggle flag
         self.__game.toggleFlag()
 
+        # Update flag color and text
         if self.__game.flag():
             self.__flagBtn.configure(bg='orange red', text="Flag ON")
 

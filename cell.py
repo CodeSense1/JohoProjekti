@@ -3,6 +3,16 @@ import tkinter as tk
 
 # Could this inherit from tkinter.Button?
 
+# Cell object is basically tkinter Button with couple of extra methods
+# Each cell holds data about its state (mine of regular), it's position,
+# is the cell revealed and is it marked with a flag
+#
+# Also each cell is used as a mousepressed event and therefore instances to
+# minesweeper and window object are necessary.
+# Cell is also responsible for drawing itself to the window, so it needs
+# a reference to main window, so it can be drawn
+#
+
 class Cell():
 
     def __init__(self, window, x, y, mineState, master, gameInstance):
@@ -16,9 +26,11 @@ class Cell():
         self.__master = master
 
         # Cell object is basicly Button with extra methods
-        self.__btn = tk.Button(self.__master, text=" ", command=self.press)
+        # If I knew better what inheritance is, maybe this could be easier
+        self.__btn = tk.Button(self.__master, text=" ",
+                               width=2, command=self.press)
         self.__btn.grid(row=2 + x, column=1 + y)
-        self.__btn.configure(width=2)
+        # self.__btn.configure()
 
         self.__x = x
         self.__y = y
@@ -90,16 +102,18 @@ class Cell():
 
     def press(self):
         """ Behavior that happens when Cell is pressed """
-
-        if self.__gameInstance.flag():
+        flagOn = self.__gameInstance.flag()
+        if flagOn and not self.__isRevealed:
+            # Clicked cell is not revealed, so a flag can be added
             self.__flag = False if self.__flag else True
+            # Because flag is on, we don't want to continue
 
-        elif self.__mine:
+        elif self.__mine and not flagOn:
             self.show()
             self.__gameInstance.gameOver()
             # GAME OVER!
 
-        elif self.__isRevealed:
+        elif self.__isRevealed and not flagOn:
             # We are already shown, so let's show the neighbours
             self.__gameInstance.updateNeighbours(self.__x, self.__y)
 
