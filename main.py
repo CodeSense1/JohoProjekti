@@ -1,5 +1,9 @@
-import tkinter as tk
-from minesweeper import Minesweeper
+# TIE-02102
+# Joonas Kakkuri, joonas.kakkuri@tuni.fi, 274166
+# Ilari Hauhia, ilari.hauhia@tuni.fi, 282273
+# Skaalautuva projekti: Miinaharava
+
+
 
 # Minesweeper tyylinen peli. Aluksi pelaaja valitsee vaikeustason easy/medium/hard
 # tai vaihtoehtoisesti kenttään voi syöttää haluamansa luvut, kuitenkin pienin
@@ -12,6 +16,10 @@ from minesweeper import Minesweeper
 # Pelaamista helpottamiseksi voit asettaa kysymysmerkin solun päälle jotka
 # voisivat olla miinoja. Merkin saat painamalla FLAG-nappia, jolloin sen väri muuttuu
 # punaiseksi. Merkattuja soluja ei voi avata, eikä niitä oteta huomioon.
+
+
+import tkinter as tk
+from minesweeper import Minesweeper
 
 
 class GUI():
