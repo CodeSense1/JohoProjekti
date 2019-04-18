@@ -1,13 +1,17 @@
 import tkinter as tk
 from minesweeper import Minesweeper
 
-# Minesweeper
-
-# TODO: 1. Handle errorreus inputs DONE
-#       2. New game - button and implementation
-#       3. Change colors when cell is revealed
-#       4. Scoring system
-#       5. Proper documentation
+# Minesweeper tyylinen peli. Aluksi pelaaja valitsee vaikeustason easy/medium/hard
+# tai vaihtoehtoisesti kenttään voi syöttää haluamansa luvut, kuitenkin pienin
+# rajoittein: pelikentän tulee olla vähintään 5x5 kokoinen.
+#
+# Pelin kulku:
+# Solua painamalla voit avata solun. Avatun solun numero kertoo, kuinka monta
+# miinaa sitä ympäröi. Pelin voittaa, kun avaa kaikki solut, jotka eivät ole miinoja.
+#
+# Pelaamista helpottamiseksi voit asettaa kysymysmerkin solun päälle jotka
+# voisivat olla miinoja. Merkin saat painamalla FLAG-nappia, jolloin sen väri muuttuu
+# punaiseksi. Merkattuja soluja ei voi avata, eikä niitä oteta huomioon.
 
 
 class GUI():
@@ -18,22 +22,24 @@ class GUI():
         # Set a static size
         self.__root.geometry("350x150")
 
+        # Variables for board dimensions
         self.__width = tk.IntVar()
         self.__height = tk.IntVar()
         self.__minecount = tk.IntVar()
 
-        # Create labels
+        # Create labels for menu
         tk.Label(self.__root, text="Enter the width:").grid(row=1, column=0)
         tk.Label(self.__root, text="Enter the height:").grid(row=2, column=0)
         tk.Label(self.__root, text="Enter the amount of mines:").grid(
             row=3, column=0)
 
         self.__errorLabel = tk.Label(self.__root, text="")
-        self.__errorLabel.grid(row=0, column=1, columnspan=2)
+        self.__errorLabel.grid(row=0, column=0, columnspan=2, sticky=tk.W)
 
         infoLabel = tk.Label(self.__root, text="")
         infoLabel.grid(row=0, column=1)
 
+        # entries for game dimensions
         widthEntry = tk.Entry(self.__root, textvariable=self.__width)
         widthEntry.grid(row=1, column=1)
 
@@ -43,6 +49,7 @@ class GUI():
         mineEntry = tk.Entry(self.__root, textvariable=self.__minecount)
         mineEntry.grid(row=3, column=1)
 
+        # Buttons for difficulty
         easyBtn = tk.Button(self.__root, text="Easy",
                             command=self.easy)
         easyBtn.grid(row=1, column=2, sticky=tk.E)
@@ -53,6 +60,7 @@ class GUI():
         hardBtn = tk.Button(self.__root, text="Hard", command=self.hard)
         hardBtn.grid(row=3, column=2, sticky=tk.E)
 
+        # Start button
         startBtn = tk.Button(self.__root, text="Start game",
                              command=self.setup, height=2, width=7)
 
@@ -63,19 +71,33 @@ class GUI():
     def setup(self):
         """ Setup the game """
         try:
+            # Check for valid input
             w = self.__width.get()
             h = self.__height.get()
             m = self.__minecount.get()
+
+            if m < 0:
+                self.__errorLabel.configure(text="Can't have negative mines!")
+                return
+
+            if w < 5 or h < 5:
+                # Too small board
+                self.__errorLabel.configure(
+                    text="width/height must be over 5!")
+                return
+
         except tk.TclError:
             # User entered invalid argument
             self.__errorLabel.configure(text="Invalid input!")
 
             return
 
+        # desrtoy menu and start the game
         self.__root.destroy()
         self.__window = tk.Tk()
         self.__window.title("Minesweeper")
 
+        # Initialize game
         self.__game = Minesweeper(
             self, self.__window, self.__width.get(), self.__height.get(), self.__minecount.get())
 
@@ -94,21 +116,25 @@ class GUI():
         self.updateText(self.__game.hasWon())
 
     def easy(self):
+        """ Preset values for easy difficulty """
         self.__width.set(9)
         self.__height.set(9)
         self.__minecount.set(10)
 
     def medium(self):
+        """ Preset values for medium difficulty """
         self.__width.set(16)
         self.__height.set(16)
         self.__minecount.set(40)
 
     def hard(self):
+        """ Preset values for hard difficulty """
         self.__width.set(20)
         self.__height.set(20)
         self.__minecount.set(65)
 
     def start(self):
+        """ Start the game """
         try:
             self.__window.mainloop()
         except AttributeError:

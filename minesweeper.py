@@ -1,7 +1,9 @@
 
 from cell import Cell
 from random import randint
-# This class holds data about minesweeper field
+
+# This class holds data about minesweeper field. It is responsible for
+# updating the game and holding data about the state of the board.
 
 
 class Minesweeper():
@@ -49,15 +51,15 @@ class Minesweeper():
 
     def showAll(self):
         """ Show all cells on the board """
-        for i in range(self.__width):
-            for j in range(self.__height):
+        for i in range(self.__height):
+            for j in range(self.__width):
                 self.__board[i][j].show()
 
     def hideAll(self):
         """ Hide all cells on the board """
         self.__gameover = False
-        for i in range(self.__width):
-            for j in range(self.__height):
+        for i in range(self.__height):
+            for j in range(self.__width):
                 self.__board[i][j].setState(False)
 
     def gameOver(self):
@@ -73,16 +75,16 @@ class Minesweeper():
         minepos = []
         if self.__mines >= (self.__width * self.__height):
             # There are more or equal amount of mines than cells
-            for i in range(self.__width):
-                for j in range(self.__height):
+            for i in range(self.__height):
+                for j in range(self.__width):
                     minepos.append([i, j])
 
         else:
             while len(minepos) < self.__mines:
                 # select unique random positions, where mines
                 # will be placed
-                pos = [randint(0, self.__width - 1),
-                       randint(0, self.__height - 1)]
+                pos = [randint(0, self.__height - 1),
+                       randint(0, self.__width - 1)]
                 if pos in minepos:
                     # There is already a mine in this cell
                     continue
@@ -91,8 +93,8 @@ class Minesweeper():
                     minepos.append(pos)
 
         # Populate new board with Cells
-        for i in range(self.__width):
-            for j in range(self.__height):
+        for i in range(self.__height):
+            for j in range(self.__width):
                 if [i, j] in minepos:
 
                     # Cell at i,j is mine
@@ -106,8 +108,8 @@ class Minesweeper():
 
         # Count neighbours, so amount of mines can be shown on
         # revealed cell
-        for i in range(self.__width):
-            for j in range(self.__height):
+        for i in range(self.__height):
+            for j in range(self.__width):
                 self.countNeighbours(i, j)
 
     def getMines(self):
@@ -118,8 +120,8 @@ class Minesweeper():
         """ Get amount of mines, that are marked with flag """
         flagged = 0
         # Loop over all the cells in the board
-        for i in range(self.__width):
-            for j in range(self.__height):
+        for i in range(self.__height):
+            for j in range(self.__width):
                 if self.__board[i][j].isFlag():
                     # This cell is flagged
                     flagged += 1
@@ -132,20 +134,24 @@ class Minesweeper():
             # All cells are revealed, except those that are mines
             return True
         else:
+            # Some cells are still hidden, keep on playing
             return False
 
     def countRevealedNeighbours(self):
+        """ Calculates, how many cells has been revealed """
         self.__amountOfRevealedCells = 0
-        for i in range(self.__width):
-            for j in range(self.__height):
+
+        for i in range(self.__height):
+            for j in range(self.__width):
+
                 if self.__board[i][j].isRevealed():
                     self.__amountOfRevealedCells += 1
 
     def update(self):
         """ Update board """
         # Loop over every cell in the board
-        for i in range(self.__width):
-            for j in range(self.__height):
+        for i in range(self.__height):
+            for j in range(self.__width):
                 # Let's update this cell
                 cell = self.__board[i][j]
 

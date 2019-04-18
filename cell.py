@@ -42,18 +42,21 @@ class Cell():
         self.__isRevealed = False
 
     def __str__(self):
-        """ In case you want to print Cell """
+        """ Printing cell """
         return "x: {}, y: {}, is mine: {}".format(self.__x, self.__y, self.__mine)
 
     # _____ Getters and Setters _____
 
     def isFlag(self):
+        """ Get flag state """
         return self.__flag
 
     def isRevealed(self):
+        """ Is cell revealed """
         return self.__isRevealed
 
     def isMine(self):
+        """ Is cell mine """
         return self.__mine
 
     def setState(self, state):
@@ -117,8 +120,9 @@ class Cell():
             # We are already shown, so let's show the neighbours
             self.__gameInstance.updateNeighbours(self.__x, self.__y)
 
-        else:
+        elif not self.__flag:
             self.show()
+
         self.__gameInstance.update()
 
     def show(self):
